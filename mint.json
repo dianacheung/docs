@@ -33,11 +33,9 @@
   ],
   "navigation": [
     {
-      "group": "Get Started",
+      "group": "Project",
       "pages": [
-        "introduction",
-        "quickstart",
-        "development"
+        "introduction"
       ]
     },
     {
