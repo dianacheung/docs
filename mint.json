@@ -58,14 +58,6 @@
       ]
     },
     {
-      "group": "Endpoint Examples",
-      "pages": [
-        "api-reference/endpoint/get",
-        "api-reference/endpoint/create",
-        "api-reference/endpoint/delete"
-      ]
-    },
-    {
       "group": "Messages",
       "pages": [
         "api-reference/endpoints/messages/create-a-message"
