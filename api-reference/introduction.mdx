@@ -1,33 +1,235 @@
 ---
 title: 'Introduction'
-description: 'Example section for showcasing API endpoints'
+description: 'OpenAPI Specification'
 ---
 
-<Note>
-  If you're not looking to build API reference documentation, you can delete
-  this section by removing the api-reference folder.
-</Note>
+## OpenAPI Specification 3.0 
 
-## Welcome
+The following is the OpenAPI Specification 3.0 file recreated based on [Anthropic's Messages API](https://docs.anthropic.com/claude/reference/messages_post).
 
-There are two ways to build API documentation: [OpenAPI](https://mintlify.com/docs/api-playground/openapi/setup) and [MDX components](https://mintlify.com/docs/api-playground/mdx/configuration). For the starter kit, we are using the following OpenAPI specification.
-
-<Card
-  title="Plant Store Endpoints"
-  icon="leaf"
-  href="https://github.com/mintlify/starter/blob/main/api-reference/openapi.json"
->
-  View the OpenAPI specification file
-</Card>
-
-## Authentication
-
-All API endpoints are authenticated using Bearer tokens and picked up from the specification file.
-
-```json
-"security": [
-  {
-    "bearerAuth": []
-  }
-]
+```yaml
+openapi: '3.0.3'
+info:
+  title: Anthropic API
+  version: '1.0.0'
+  contact:
+    name: 'Anthropic Support'
+    email: 'support@anthropic.com'
+    url: 'support.anthropic.com'
+  description: "A recreation of Anthropic's Messages API as a sample project."
+  termsOfService: 'https://www.anthropic.com/legal/consumer-terms'
+externalDocs:
+  url: 'https://docs.anthropic.com/claude/reference/messages_post'
+  description: Anthropic official API documentation.
+tags:
+  - name: Messages
+    description: 'Model messages'
+paths:
+  /messages:
+    post:
+      tags:
+      - Messages 
+      summary: 'Create a Message.'
+      description: 'Send a structured list of input messages with text and/or image content, and the model will generate the next message in the conversation. The Messages API can be used for for either single queries or stateless multi-turn conversations.'
+      parameters: []
+      operationId: ''
+      responses:
+        '200':
+          description: Message object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessagesResponse'
+        4XX:
+          description: User error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        5XX:
+          description: System error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - model
+                - messages
+                - max_tokens
+              properties:
+                model:
+                  type: string
+                  description: The model that will complete your prompt.
+                messages:
+                  type: array
+                  description: Input messages.
+                  example: '[{"role": "user", "content": "Hello, Claude"}]'
+                  items:
+                    type: object
+                    properties:
+                      role:
+                        type: string
+                        default: "user"
+                      content:
+                        type: string
+                system:
+                  type: string
+                  description: >-
+                    A system prompt is a way of providing context and
+                    instructions to Claude, such as specifying a particular goal
+                    or role.
+                max_tokens:
+                  type: integer
+                  description: The maximum number of tokens to generate before stopping.
+                metadata:
+                  type: object
+                  description: An object describing metadata about the request.
+                stop_sequences:
+                  type: array
+                  description: >-
+                    Custom text sequences that will cause the model to stop
+                    generating.
+                  items:
+                    type: string
+                stream:
+                  type: boolean
+                  description: >-
+                    Whether to incrementally stream the response using
+                    server-sent events.
+                temperature:
+                  type: number
+                  description: Amount of randomness injected into the response.
+                top_p:
+                  type: number
+                  description: Use nucleus sampling.
+                top_k:
+                  type: integer
+                  description: >-
+                    Only sample from the top K options for each subsequent
+                    token.
+              xml:
+                name: Messages
+        description: >-
+          Model settings and a structured list of input messages with text
+          and/or image content. 
+security:
+  - api-key: []
+servers:
+  - url: 'https://api.anthropic.com/v1'
+    description: ''
+    variables: {}
+components:
+  links: {}
+  callbacks: {}
+  schemas:
+    MessagesResponse:
+      type: object
+      required:
+        - id
+        - type
+        - role
+        - content
+        - model
+        - stop_reason
+        - stop_sequence
+        - usage
+      properties:
+        id:
+          type: string
+          description: Unique object identifier.
+        type:
+          type: string
+          description: 'For Messages, this is always "message".'
+          default: "message"
+        role:
+          type: string
+          description: This will always be "assistant".
+          default: "assistant"
+        content:
+          type: array
+          description: >-
+            An array of content blocks, each of which has a type. Currently,
+            only type in responses is "text".
+          example: '[{"type": "text", "text": "Hi, I''m Claude."}]'
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                default: text
+              text:
+                type: string
+        model:
+          type: string
+          description: The model that handled the request.
+        stop_reason:
+          type: string
+          description: >-
+            The reason that the model stopped. In non-streaming mode this value
+            is always non-null. In streaming mode, it is null in the
+            message_start event and non-null otherwise.
+          enum:
+            - end_turn
+            - max_tokens
+            - stop_sequence
+        stop_sequence:
+          type: string
+          description: >-
+            This value will be a non-null string if one of your custom stop
+            sequences was generated. Else null.
+        usage:
+          type: object
+          description: Billing and rate-limit usage.
+          required:
+            - input_tokens
+            - output_tokens
+          properties:
+            input_tokens:
+              type: integer
+              description: The number of input tokens which were used.
+            output_tokens:
+              type: integer
+              description: The number of output tokens which were used.
+    ErrorResponse:
+      type: object
+      required:
+        - type
+        - error
+      properties:
+        type:
+          type: string
+          default: error
+        error:
+          type: object
+          properties:
+            type:
+              type: string
+              example: not_found_error
+              enum:
+                - APIERROR
+                - AUTHENTICATIONERROR
+                - INVALIDREQUESTERROR
+                - NOTFOUNDERROR
+                - OVERLOADEDERROR
+                - PERMISSIONERROR
+                - RATELIMITERROR
+            message:
+              type: string
+              example: The requested resource could not be found.
+  securitySchemes:
+    api-key:
+      type: apiKey
+      name: x-api-key
+      in: header
+      description: API key to authorize requests.
 ```
+
+<Note>
+  Minor corrections and optimizations coming soon.
+</Note>

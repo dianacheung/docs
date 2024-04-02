@@ -1,0 +1,173 @@
+---
+title: 'API Audit'
+description: "Assessment of Anthropic's existing API documentation"
+---
+
+<Note>
+  Audit performed 3/27/2024.
+</Note>
+
+## Evaluate API Reference Core Elements
+
+### Resource description
+
+1. Is the description action-oriented? \
+Yes.
+> Create a Message.
+2. Is it a brief 1-3 sentence summary? \
+Yes.
+> Create a Message.
+>
+> Send a structured list of input messages with text and/or image content, and the model will generate the next message in the conversation.
+>
+> The Messages API can be used for for either single queries or stateless multi-turn conversations.
+
+Note: 
+OpenAI's Chat API description is clearer:
+> Given a list of messages comprising a conversation, the model will return a response … Creates a model response for the given chat conversation.
+
+### Endpoints and methods
+
+1. How are the endpoints grouped? (Are they listed all on the same page, or on different pages? Are they grouped by method, or by resource?) \
+There is only a single endpoint `POST /messages` (as of 3/27/2024).
+
+2. How are the methods specified for each endpoint? \
+The method is listed in front of the specific endpoint.
+
+<Frame caption="A screenshot of Anthropic's Claude API POST /messages endpoint (accessed 3/27/2024). Source: https://docs.anthropic.com/claude/reference/messages_post">
+  <img noZoom src="/images/2024-03-27_anthropic-api-messages-resource.png" 
+    alt="A screenshot of Anthropic's Claude API POST /messages endpoint (accessed 3/27/2024)."/>
+</Frame>
+
+### Parameters
+
+1. How many types of parameters are there (header, path, query string) or request body for the endpoints?
+
+There are 3 header parameters: `x-api-key`, `anthropic-version`, `content-type`.
+
+The `x-api-key` and `content-type` header parameters are explained in section <a href="https://docs.anthropic.com/claude/reference/getting-started-with-the-api" target="_blank">https://docs.anthropic.com/claude/reference/getting-started-with-the-api</a>.
+
+The `anthropic-version` parameter (2023-06-01, 2023-01-01) is explained in section <a href="https://docs.anthropic.com/claude/reference/versions" target="_blank">https://docs.anthropic.com/claude/reference/versions</a>.
+
+The `anthropic-version` parameter can cause confusion, as the endpoint states v1 https://api.anthropic.com/v1/messages. Why is this not v2?
+
+There are no path nor query string parameters.
+
+There is a long list of request body parameters: name, data type, required/blank.
+
+Examples are provided for the messages request body parameters and also in section <a href="https://docs.anthropic.com/claude/reference/messages-examples" target="_blank">https://docs.anthropic.com/claude/reference/messages-examples</a>.
+
+`max_tokens`: It should clarify that this is only for the generated model response, and not shared with the context window (this differs from OpenAI's API: The total length of input tokens and generated tokens is limited by the model's context length).
+
+`stream`: Clarify whether this is only for SDK API calls?
+
+`top_p`: Needs to specify range and default value.
+
+`top_k`: Needs to clarify if it can be used with top_p or temperature? Needs to specify range and default value.
+
+2. Are the data types (string, boolean, etc.) defined for each parameter? Are required/optional values noted?
+
+Yes, the data type and required/optional value are defined for each request body parameter.
+
+### Request example
+
+1. In what format or language is the request shown (e.g. curl, specific languages, other)?
+
+The example request is show in cURL, Python, and JavaScript.
+
+2. How many parameters does the sample request include?
+
+The example request includes 3 header parameters and 3 body parameters (all required).
+
+<Frame caption="A screenshot of Anthropic's Claude API POST /messages endpoint example request (accessed 3/27/2024). Source: https://docs.anthropic.com/claude/reference/messages_post">
+  <img noZoom src="/images/2024-03-27_anthropic-api-messages-request.png" 
+    alt="A screenshot of Anthropic's Claude API POST /messages endpoint example request (accessed 3/27/2024)."/>
+</Frame>
+
+### Response example
+
+1. Is there both a sample response and a response schema? (And is each element in the response actually described?)
+
+Yes, there is a sample response and schema.
+
+2. How does the doc site handle nested hierarchies in the response definitions?
+
+Children are nested directly inside the parent section.
+
+<Frame caption="A screenshot of Anthropic's Claude API POST /messages endpoint response content property (accessed 3/27/2024). Source: https://docs.anthropic.com/claude/reference/messages_post">
+  <img noZoom src="/images/2024-03-27_anthropic-api-messages-response-content.png" 
+    alt="A screenshot of Anthropic's Claude API POST /messages endpoint response content property (accessed 3/27/2024)."/>
+</Frame>
+
+However, there appears to be inconsistent formatting (see content vs. usage).
+
+<Frame caption="A screenshot of Anthropic's Claude API POST /messages endpoint response usage property (accessed 3/27/2024). Source: https://docs.anthropic.com/claude/reference/messages_post">
+  <img noZoom src="/images/2024-03-27_anthropic-api-messages-response-usage.png" 
+    alt="A screenshot of Anthropic's Claude API POST /messages endpoint response usage property (accessed 3/27/2024)."/>
+</Frame>
+
+Compared with OpenAI’s API, the nesting is more consistent with the Show and Hide properties toggle.
+
+<Frame caption="A screenshot of OpenAI’s API chat response example and schema (accessed 3/27/2024). Source: https://platform.openai.com/docs/api-reference/chat/object">
+  <img noZoom src="/images/2024-03-27_openai-api-chat-response-schema.png" 
+    alt="A screenshot of OpenAI’s API chat response example and schema (accessed 3/27/2024)."/>
+</Frame>
+
+## Evaluate Developer Experience Criteria
+
+Based on the <a href="https://everydeveloper.com/developer-experience/dx-guide/" target="_blank">13 DX Criteria by Adam DuVander at EveryDeveloper</a>.
+
+### 1. Libraries in popular languages (very high importance)
+Yes, SDKs in Python and JavaScript/TypeScript are available at <a href="https://docs.anthropic.com/claude/reference/client-sdks" target="_blank">https://docs.anthropic.com/claude/reference/client-sdks</a>.
+
+### 2. In-depth getting started guides (very high importance)
+There is a getting started guide at <a href="https://docs.anthropic.com/claude/reference/getting-started-with-the-api" target="_blank">https://docs.anthropic.com/claude/reference/getting-started-with-the-api</a>, but not in-depth.
+
+### 3. Self-serve option: no demo or call us required (very high importance)
+Yes, self sign up for API console access is available.
+
+### 4. A clear pricing page (very high importance)
+Yes, pricing information is available at <a href="https://www.anthropic.com/api" target="_blank">https://www.anthropic.com/api</a>. Providing some benchmarking of number of tokens equating to outcomes would be helpful. Clarify the token charges on both input and output. The plan tiers can be better presented.
+
+### 5. A free tier or trial (high importance)
+Currently, there is an offer for claiming free credits for API usage, but it is only called out inside the API console. Perhaps it can be displayed on pricing page.
+
+### 6. An obvious place for questions (high importance)
+Email support is available at support@anthropic.com.
+
+Turns out there is a Discord community server at <a href="https://www.anthropic.com/discord" target="_blank">https://www.anthropic.com/discord</a> but it is hidden at the bottom of the page at <a href="https://docs.anthropic.com/claude/docs/intro-to-claude" target="_blank">https://docs.anthropic.com/claude/docs/intro-to-claude</a>.
+
+### 7. API status information (high importance)
+API status information isn't displayed currently.
+
+### 8. Accurate API reference: source of truth (high importance)
+Unable to ascertain if Anthropic's API reference is auto-generated from an OpenAPI Specification file.
+
+### 9. Sample applications for download: after achieve hello world (high importance)
+There are no sample applications featured, but examples of messages and SDKs are available.
+
+### 10. Recent developer blog post (medium importance)
+There are news posts at <a href="https://www.anthropic.com/news" target="_blank">https://www.anthropic.com/news</a> but not developer posts currently.
+
+### 11. Interactive documentation (medium importance)
+There is copy and paste functionality along with sample request and response, but not interactive cURL calls.
+
+### 12. Prominently featured documentation: navigation for API documentation and developers (medium importance)
+Anthropic’s top navigation menu does feature an option for API, which leads to the Claude API page.
+
+<Frame caption="A screenshot of Anthropic's Claude API landing page (accessed 3/27/2024). Source: https://www.anthropic.com/api">
+  <img noZoom src="/images/2024-03-27_anthropic-api-landing-page.png" 
+    alt="A screenshot of Anthropic's Claude API landing page (accessed 3/27/2024)."/>
+</Frame>
+
+However, the link to the API documentation is obscurely hidden in the Build plan information.
+
+<Frame caption="A screenshot of Anthropic's Claude API plan tiers (accessed 3/27/2024). Source: https://www.anthropic.com/api">
+  <img noZoom src="/images/2024-03-27_anthropic-api-tiers.png" 
+    alt="A screenshot of Anthropic's Claude API plan tiers (accessed 3/27/2024)."/>
+</Frame>
+
+The API navigation menu should have submenus for Pricing/Models and API Documentation.
+
+### 13. Example cURL calls: copy and paste examples with a working API key (medium importance)
+Yes, example cURL call is available at <a href="https://docs.anthropic.com/claude/reference/messages_post" target="_blank">https://docs.anthropic.com/claude/reference/messages_post</a>. However, users need to provide their own API keys as no test API keys are available.
